@@ -1,0 +1,14 @@
+$primary: #6f42c1; // özel ana renk (mor)
+@import "bootstrap/scss/bootstrap";
+
+body.light {
+  background-color: #ffffff;
+  color: #212529;
+  transition: background 0.3s ease;
+}
+
+body.dark {
+  background-color: #121212;
+  color: #f8f9fa;
+  transition: background 0.3s ease;
+}
