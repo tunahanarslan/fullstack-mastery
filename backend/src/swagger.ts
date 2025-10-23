@@ -1,7 +1,7 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
-import { PORT } from "./config";
+import { PORT } from "./config/index.js";
 
 const options = {
   definition: {
@@ -14,6 +14,20 @@ const options = {
     servers: [
       {
         url: `http://localhost:${PORT}`,
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
       },
     ],
   },

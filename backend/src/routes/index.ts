@@ -1,11 +1,12 @@
 import { Router } from "express";
-import helloRoute from "./hello";
-import userRoute from "./user";
+import helloRoute from "./hello.js";
+import userRoute from "./user.js";
+import authRoutes from "./auth.js";
 
 const router = Router();
 
-// tüm route’ları tek yerden dışa aktar
-router.use(helloRoute);
-router.use(userRoute);
+router.use("/auth", authRoutes);
+router.use("/hello", helloRoute);
+router.use("/users", userRoute);
 
 export default router;
