@@ -1,33 +1,35 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import dotenv from "dotenv";
+import { setupSwagger } from "./swagger";
+import helloRoute from "./routes/hello";
+import userRoute from "./routes/user";
+import { PORT, API_BASE } from "./config"; // ✅ config'ten alıyoruz
+import routes from "./routes"; //dinamik
 
-dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 
-// 🔧 Middleware'ler
-app.use(cors());
-app.use(express.json());
-app.use(morgan("dev"));
+// 🔧 Middleware //
+app.use(morgan("dev")); // 1️⃣ Log her isteği
+app.use(cors()); // 2️⃣ CORS erişimini aç
+app.use(express.json()); // 3️⃣ JSON gövdeleri parse et
+// 🔗 Routes
+app.use(API_BASE, routes); // 4️⃣ Route'ları bağla
+// 🧠 Swagger Setup
+setupSwagger(app); // 5️⃣ Swagger sonradan gelsin
 
-// 🧠 Basit test endpoint
-app.get("/api/hello", (req, res) => {
-  console.log("📩 Yeni istek geldi:", new Date().toISOString());
-  res.json({ message: "Hello, Tunahan! 🚀 Backend is running smoothly." });
-});
 
-// 🚀 Server'ı başlat
-app.listen(PORT, () => {
-  console.log(`✅ Server is live at: http://localhost:${PORT}`);
-});
-
+// 🧪 Basit test endpoint 
 app.get("/", (req, res) => {
   res.send(`
     <h1>Fullstack Mastery Backend</h1>
     <p>🚀 Server is running successfully.</p>
-    <p>Try <a href="/api/hello">/api/hello</a> endpoint.</p>
+    <p>Try <a href="${API_BASE}/hello">${API_BASE}/hello</a> endpoint.</p>
   `);
+});
+
+// 🚀 Server başlatma
+app.listen(PORT, () => {
+  console.log(`✅ Server is live at: http://localhost:${PORT}`); //config'ten çekiliyor port cnm
 });
