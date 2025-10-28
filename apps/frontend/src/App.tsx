@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { AuthProvider } from "./context/AuthContext.js";
 import AuthForm from "./components/AuthForm.js";
 import Dashboard from "./pages/Dashboard.js";
 import ProtectedRoute from "./components/ProtectedRoute.js";
+import { HashRouter as BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
