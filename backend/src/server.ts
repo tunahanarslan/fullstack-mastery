@@ -15,7 +15,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: ["https://tunahanarslan.github.io"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
