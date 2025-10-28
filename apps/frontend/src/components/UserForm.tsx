@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../services/api";
+import api from "../services/api.js";
 
 export default function UserForm({ onUserAdded }: { onUserAdded: () => void }) {
   const [name, setName] = useState("");

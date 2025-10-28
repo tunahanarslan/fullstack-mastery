@@ -1,70 +1,128 @@
 import { useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-interface AuthFormProps {
-  onLogin: (token: string) => void;
-}
+export default function AuthForm() {
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-export default function AuthForm({ onLogin }: AuthFormProps) {
-  const [isLogin, setIsLogin] = useState(true);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const endpoint = isLogin ? "/auth/login" : "/auth/register";
-      const payload = isLogin ? { email, password } : { name, email, password };
-      const res = await api.post(endpoint, payload);
+    setLoading(true);
+    setMessage(null);
 
-      const token = res.data.token;
-      onLogin(token); // 🔥 parent’a token’ı ilet
-      alert(`${isLogin ? "Logged in" : "Registered"} successfully!`);
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Error occurred");
+    try {
+      const endpoint = mode === "login" ? "/auth/login" : "/auth/register";
+      const { data } = await api.post(endpoint, formData);
+
+      if (mode === "login" && data.token) {
+        login(data.token);
+        setMessage("✅ Login successful! Redirecting...");
+        setTimeout(() => navigate("/"), 1200);
+      } else {
+        setMessage("✅ Registration successful! You can now log in.");
+        setMode("login");
+      }
+    } catch (error: any) {
+      console.error("Auth error:", error);
+      setMessage("❌ " + (error.response?.data?.message || "An error occurred."));
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "400px" }}>
-      <h2 className="text-center mb-4">{isLogin ? "Login" : "Register"}</h2>
-      <form onSubmit={handleSubmit}>
-        {!isLogin && (
-          <input
-            type="text"
-            placeholder="Name"
-            className="form-control mb-2"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        )}
-        <input
-          type="email"
-          placeholder="Email"
-          className="form-control mb-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="form-control mb-3"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button className="btn btn-primary w-100" type="submit">
-          {isLogin ? "Login" : "Register"}
-        </button>
-      </form>
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="card shadow p-4" style={{ width: "360px" }}>
+        <h3 className="text-center mb-3 fw-bold text-primary">
+          {mode === "login" ? "Login to Your Account" : "Create a New Account"}
+        </h3>
 
-      <div className="text-center mt-3">
-        <button
-          className="btn btn-link"
-          onClick={() => setIsLogin(!isLogin)}
-        >
-          {isLogin ? "Create an account" : "Already have an account?"}
-        </button>
+        {message && (
+          <div
+            className={`alert ${
+              message.startsWith("✅") ? "alert-success" : "alert-danger"
+            }`}
+            role="alert"
+          >
+            {message}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          {mode === "register" && (
+            <div className="mb-3">
+              <label className="form-label">Name</label>
+              <input
+                type="text"
+                className="form-control"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )}
+
+          <div className="mb-3">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+            {loading
+              ? "Processing..."
+              : mode === "login"
+              ? "Login"
+              : "Register"}
+          </button>
+        </form>
+
+        <div className="text-center mt-3">
+          {mode === "login" ? (
+            <p>
+              Don’t have an account?{" "}
+              <button className="btn btn-link p-0" onClick={() => setMode("register")}>
+                Register here
+              </button>
+            </p>
+          ) : (
+            <p>
+              Already have an account?{" "}
+              <button className="btn btn-link p-0" onClick={() => setMode("login")}>
+                Login here
+              </button>
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

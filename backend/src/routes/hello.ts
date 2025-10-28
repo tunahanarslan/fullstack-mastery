@@ -5,13 +5,13 @@ const router = Router();
  * @openapi
  * /api/hello:
  *   get:
- *     summary: Test endpoint
- *     description: Returns a simple greeting message.
+ *     summary: Simple test endpoint
+ *     tags: [Hello]
  *     responses:
  *       200:
- *         description: Successful response
+ *         description: Returns a greeting message
  */
-router.get("/hello", (req: Request, res: Response) => {
+router.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Hello, Tunahan! 👋 Backend is alive." });
 });
 

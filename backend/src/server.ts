@@ -5,7 +5,6 @@ import { setupSwagger } from "./swagger.js";
 import { connectDB, PORT, API_BASE } from "./config/index.js";
 import routes from "./routes/index.js";
 
-
 const app = express();
 
 // 🔒 Sadece izin verilen origin’lerden gelen istekleri kabul et
@@ -24,23 +23,15 @@ app.use(
 
 // 🔧 Middleware //
 app.use(morgan("dev")); // 1️⃣ Log her isteği
-app.use(cors()); // 2️⃣ CORS erişimini aç
-app.use(express.json()); // 3️⃣ JSON gövdeleri parse et
+app.use(express.json()); // 2️⃣ JSON gövdeleri parse et
+
 // 🔗 Routes
-app.use(API_BASE, routes); // 4️⃣ Route'ları bağla
+app.use(API_BASE, routes); // 3️⃣ Route'ları bağla
+
 // 🧠 Swagger Setup
-setupSwagger(app); // 5️⃣ Swagger sonradan gelsin
+setupSwagger(app); // 4️⃣ Swagger sonradan gelsin
 
 // 🧪 Basit test endpoint 
-app.get("/", (req, res) => {
-  res.send(`
-    <h1>Fullstack Mastery Backend</h1>
-    <p>🚀 Server is running successfully.</p>
-    <p>Try <a href="${API_BASE}/hello">${API_BASE}/hello</a> endpoint.</p>
-  `);
-});
-
-// 🧪 Basit test endpoint
 app.get("/", (req, res) => {
   res.send(`
     <h1>Fullstack Mastery Backend</h1>
@@ -61,7 +52,6 @@ async function startServer() {
     process.exit(1);
   }
 }
-
 
 // 🔒 Global error handlers
 process.on("uncaughtException", (err) => {

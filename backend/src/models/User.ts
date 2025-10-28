@@ -1,6 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -12,12 +19,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Email is required"],
       unique: true,
+      lowercase: true,
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"],
     },
   },
-  {
-    timestamps: true, // createdAt ve updatedAt otomatik gelir
-  }
+  { timestamps: true }
 );
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model<IUser>("User", userSchema);
